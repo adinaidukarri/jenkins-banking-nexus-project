@@ -1,0 +1,175 @@
+/* =====================================================
+   Aviz Academy – Main Stylesheet
+   Jenkins CI/CD Demo on AWS
+   ===================================================== */
+
+:root {
+  --bg: #f6f8fb;
+  --card: #ffffff;
+  --muted: #6c757d;
+  --primary: #2563eb;
+  --primary-dark: #1e3a5f;
+  --accent: #10b981;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  background: linear-gradient(180deg, #f7f9fc 0%, var(--bg) 100%);
+  color: #111827;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+}
+
+/* ── Navbar ── */
+.navbar .brand-logo { height: 32px; }
+.brand-title { font-weight: 700; margin-left: 8px; color: var(--primary); }
+
+/* ── Site main ── */
+.site-main { padding: 2.5rem 0 4rem; }
+
+/* ── Hero ── */
+.hero { padding: 3rem 0; }
+.hero-card {
+  display: inline-block;
+  max-width: 820px;
+  width: 100%;
+  padding: 2.5rem 2rem;
+  background: var(--card);
+  border-radius: 14px;
+  box-shadow: 0 8px 32px rgba(17, 24, 39, 0.08);
+  text-align: center;
+}
+.hero-logo { height: 80px; }
+.hero-title { font-size: 2rem; margin: 0.25rem 0; font-weight: 700; color: #0f172a; }
+.hero-subtitle { color: #374151; margin-bottom: 0.75rem; }
+.hero-greeting { font-size: 1.25rem; color: var(--primary-dark); font-weight: 600; }
+
+/* ── Academy badge ── */
+.academy-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 4px 14px;
+  border-radius: 20px;
+}
+
+/* ── Section title ── */
+.section-title { font-weight: 700; color: #0f172a; }
+
+/* ── Features ── */
+.feature-card {
+  background: var(--card);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(17, 24, 39, 0.07);
+  height: 100%;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.12);
+}
+.feature-logo { height: 56px; }
+.feature-icon { font-size: 2rem; }
+.features h3 { margin-top: 0.5rem; font-weight: 600; }
+.features p { color: var(--muted); }
+
+/* ── CI/CD Pipeline section ── */
+.pipeline-section { background: linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 100%); }
+.pipeline-steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.pipeline-step {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px 20px;
+  text-align: center;
+  min-width: 110px;
+  box-shadow: 0 2px 12px rgba(37, 99, 235, 0.1);
+  border-top: 3px solid var(--primary);
+}
+.step-number {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+.step-icon { font-size: 1.6rem; }
+.step-label { font-weight: 600; font-size: 0.85rem; color: #0f172a; margin-top: 4px; }
+.step-sub { font-size: 0.7rem; color: var(--muted); }
+.pipeline-arrow { font-size: 1.4rem; color: var(--primary); font-weight: 700; }
+
+/* ── Tech stack badges ── */
+.tech-stack { background: var(--card); }
+.tech-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #f0f4ff 0%, #e8efff 100%);
+  color: var(--primary-dark);
+  border: 1px solid #c7d8ff;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  width: 100%;
+}
+
+/* ── Dashboard stat icons ── */
+.stat-icon { font-size: 2rem; }
+
+/* ── Dashboard pipeline mini ── */
+.pipeline-mini {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.stage {
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.stage-done {
+  background: #d1fae5;
+  color: #065f46;
+  border: 1px solid #6ee7b7;
+}
+.stage-arrow { font-size: 1rem; color: var(--muted); }
+
+/* ── Buttons ── */
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+  border: 0;
+  padding: 0.65rem 1.2rem;
+  font-weight: 600;
+  border-radius: 8px;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.2);
+}
+.btn-primary:focus, .btn-primary:hover { transform: translateY(-1px); }
+
+/* ── Footer ── */
+.site-footer { font-size: 0.9rem; color: var(--muted); }
+
+/* ── Responsive tweaks ── */
+@media (max-width: 768px) {
+  .hero-card { padding: 1.5rem; border-radius: 10px; }
+  .hero-logo { height: 64px; }
+  .hero-title { font-size: 1.6rem; }
+  .pipeline-steps { flex-direction: column; align-items: stretch; }
+  .pipeline-arrow { transform: rotate(90deg); align-self: center; }
+}
+
+@media (max-width: 480px) {
+  .brand-title { display: none; }
+  .feature-logo { height: 44px; }
+  .hero-card { padding: 1rem; }
+}

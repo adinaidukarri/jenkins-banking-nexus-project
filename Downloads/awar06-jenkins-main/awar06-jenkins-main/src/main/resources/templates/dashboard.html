@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Aviz Academy CI/CD</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="icon" th:href="@{/images/favicon.svg}" type="image/svg+xml">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-md navbar-dark bg-dark shadow-sm">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" th:href="@{/}">
+            <img th:src="@{/images/Jenkins-logo.png}" alt="Aviz Academy"
+                 style="width:36px;height:36px;" class="mr-2"
+                 onerror="this.onerror=null;this.src='/images/jenkins-logo.png'"/>
+            <span class="font-weight-bold">Aviz Academy</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item"><a class="nav-link" th:href="@{/}">Home</a></li>
+                <li class="nav-item active"><a class="nav-link" th:href="@{/dashboard}">Dashboard</a></li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span th:text="${username}">User</span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+                        <div class="dropdown-divider"></div>
+                        <form th:action="@{/logout}" method="post" style="display:inline;">
+                            <button type="submit" class="dropdown-item text-danger">Logout</button>
+                        </form>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<main role="main" class="py-5">
+    <div class="container">
+
+        <!-- Page header -->
+        <div class="row mb-4">
+            <div class="col-12 d-flex justify-content-between align-items-center flex-wrap">
+                <div>
+                    <h1 class="mb-1">Welcome, <span th:text="${username}">User</span>!</h1>
+                    <p class="text-muted mb-0">Aviz Academy &mdash; Jenkins CI/CD Dashboard</p>
+                </div>
+                <div class="mt-2 mt-md-0">
+                    <span class="badge badge-success p-2">&#9679; System Online</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stat cards -->
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body text-center">
+                        <div class="stat-icon text-primary mb-2">&#128640;</div>
+                        <h5 class="card-title">Deployments</h5>
+                        <p class="card-text display-4 font-weight-bold text-primary">12</p>
+                        <small class="text-muted">Total this month</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body text-center">
+                        <div class="stat-icon text-success mb-2">&#9989;</div>
+                        <h5 class="card-title">Success Rate</h5>
+                        <p class="card-text display-4 font-weight-bold text-success">98%</p>
+                        <small class="text-muted">Build pipeline</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body text-center">
+                        <div class="stat-icon text-info mb-2">&#9881;</div>
+                        <h5 class="card-title">Active Pipelines</h5>
+                        <p class="card-text display-4 font-weight-bold text-info">5</p>
+                        <small class="text-muted">Jenkins jobs running</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-2">
+
+            <!-- Recent Activity -->
+            <div class="col-md-8 mb-4">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white border-bottom-0 pt-3">
+                        <h5 class="mb-0 font-weight-bold">&#128203; Recent Pipeline Activity</h5>
+                    </div>
+                    <div class="card-body pt-0">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                <div>
+                                    <span class="badge badge-success mr-2">Success</span>
+                                    <strong>Production Deploy</strong> &mdash; WAR deployed to Tomcat
+                                </div>
+                                <small class="text-muted">2h ago</small>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                <div>
+                                    <span class="badge badge-success mr-2">Success</span>
+                                    <strong>Staging Build</strong> &mdash; mvn package completed
+                                </div>
+                                <small class="text-muted">5h ago</small>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                <div>
+                                    <span class="badge badge-warning mr-2">Warning</span>
+                                    <strong>Test Suite</strong> &mdash; 1 flaky test detected
+                                </div>
+                                <small class="text-muted">1d ago</small>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                <div>
+                                    <span class="badge badge-success mr-2">Success</span>
+                                    <strong>Development Deploy</strong> &mdash; Feature branch merged
+                                </div>
+                                <small class="text-muted">2d ago</small>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                <div>
+                                    <span class="badge badge-success mr-2">Success</span>
+                                    <strong>OWASP Scan</strong> &mdash; No critical vulnerabilities
+                                </div>
+                                <small class="text-muted">3d ago</small>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- CI/CD Pipeline stages -->
+                <div class="card shadow-sm border-0 mt-4">
+                    <div class="card-header bg-white border-bottom-0 pt-3">
+                        <h5 class="mb-0 font-weight-bold">&#128736; Last Build Stages</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="pipeline-mini">
+                            <div class="stage stage-done">Checkout</div>
+                            <div class="stage-arrow">&#8594;</div>
+                            <div class="stage stage-done">Build</div>
+                            <div class="stage-arrow">&#8594;</div>
+                            <div class="stage stage-done">Test</div>
+                            <div class="stage-arrow">&#8594;</div>
+                            <div class="stage stage-done">Deploy</div>
+                        </div>
+                        <p class="text-muted mt-2 mb-0"><small>All stages passed &mdash; Spring Boot WAR deployed to Tomcat on AWS EC2</small></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User info sidebar -->
+            <div class="col-md-4">
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-white border-bottom-0 pt-3">
+                        <h5 class="mb-0 font-weight-bold">&#128100; Your Account</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-2"><strong>Username:</strong>
+                            <span th:text="${username}" class="text-primary">user</span>
+                        </p>
+                        <p class="mb-2"><strong>Roles:</strong></p>
+                        <div th:each="authority : ${authorities}">
+                            <span class="badge badge-secondary mr-1" th:text="${authority}">ROLE_USER</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between">
+                            <a th:href="@{/actuator/health}" class="btn btn-sm btn-outline-secondary">Health</a>
+                            <a th:href="@{/actuator/info}" class="btn btn-sm btn-outline-secondary">Info</a>
+                            <a th:href="@{/api/status}" class="btn btn-sm btn-outline-secondary">API</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tech stack info -->
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-white border-bottom-0 pt-3">
+                        <h5 class="mb-0 font-weight-bold">&#128196; App Info</h5>
+                    </div>
+                    <div class="card-body">
+                        <small>
+                            <p class="mb-1"><strong>Framework:</strong> Spring Boot 3.3.3</p>
+                            <p class="mb-1"><strong>Java:</strong> 17</p>
+                            <p class="mb-1"><strong>Build:</strong> Maven + Jenkins</p>
+                            <p class="mb-1"><strong>Server:</strong> Apache Tomcat</p>
+                            <p class="mb-0"><strong>Cloud:</strong> AWS EC2</p>
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Admin Panel -->
+                <div class="card shadow-sm border-0" sec:authorize="hasRole('ADMIN')">
+                    <div class="card-header bg-warning border-bottom-0 pt-3">
+                        <h5 class="mb-0 font-weight-bold">&#128274; Admin Panel</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted small mb-2">Admin-only features</p>
+                        <a th:href="@{/api/users}" class="btn btn-sm btn-warning btn-block mb-2">View All Users</a>
+                        <a th:href="@{/h2-console}" target="_blank" class="btn btn-sm btn-outline-warning btn-block">H2 DB Console</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+<footer class="bg-white border-top mt-4">
+    <div class="container text-center py-3">
+        <small class="text-muted">
+            &copy; <span th:text="${#dates.format(new java.util.Date(), 'yyyy')}"></span>
+            <strong>Aviz Academy</strong> &mdash; Jenkins CI/CD Demo on AWS
+        </small>
+    </div>
+</footer>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
