@@ -1,0 +1,92 @@
+<!--
+  ============================================================
+  Maven settings.xml — The Master Key for the Nexus Warehouse
+  ============================================================
+
+  Analogy:
+    When a delivery driver (Jenkins/Maven) goes to the Nexus
+    warehouse to drop off or pick up packages, they need to
+    show their ID badge at the gate.
+
+    This settings.xml is that ID badge — stored securely on
+    the Jenkins server (NOT in your code repo).
+
+  WHERE TO PLACE THIS FILE on your Jenkins EC2:
+    Option A (for jenkins user only):
+      /var/lib/jenkins/.m2/settings.xml
+
+    Option B (for all users):
+      /usr/share/maven/conf/settings.xml
+
+  ⚠️  IMPORTANT:
+    - Replace YOUR_NEXUS_USERNAME and YOUR_NEXUS_PASSWORD
+      with your actual Nexus admin credentials.
+    - The <id> values (nexus-snapshots, nexus-releases) MUST
+      match the IDs in your pom.xml <distributionManagement>.
+    - Never commit this file to Git if it has real credentials!
+  ============================================================
+-->
+
+<settings xmlns="http://maven.apache.org/SETTINGS/1.2.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.2.0
+          http://maven.apache.org/xsd/settings-1.2.0.xsd">
+
+  <servers>
+
+    <!--
+      Credentials for the SNAPSHOT repository.
+      Used when: mvn deploy (version ends with -SNAPSHOT)
+      Analogy: Badge to enter the "goods receiving" door (snapshots)
+    -->
+    <server>
+      <id>nexus-snapshots</id>
+      <username>admin</username>
+      <password>Devops@09876</password>
+    </server>
+
+    <!--
+      Credentials for the RELEASE repository.
+      Used when: mvn deploy (version without -SNAPSHOT, e.g. 1.0)
+      Analogy: Badge to enter the "permanent storage" vault (releases)
+    -->
+    <server>
+      <id>nexus-releases</id>
+      <username>admin</username>
+      <password>Devops@09876</password>
+    </server>
+
+  </servers>
+
+  <!--
+    ============================================================
+    Mirror — Route ALL Maven downloads through Nexus.
+    ============================================================
+
+    Analogy:
+      Without a mirror, Maven goes directly to the internet
+      (Maven Central) to download every dependency — like
+      every employee going to the manufacturer directly.
+
+      With this mirror, ALL requests go through Nexus first.
+      If Nexus has the JAR cached → instant delivery.
+      If not → Nexus fetches from internet, caches it for next time.
+
+      This is the "proxy warehouse" benefit of Nexus!
+
+    ⚠️  This requires a "maven-central" proxy repo in Nexus
+        (or use the "maven-public" group repo URL instead).
+        Comment out this section if not using proxy repos.
+  -->
+  <mirrors>
+    <mirror>
+      <id>nexus-mirror</id>
+      <name>Nexus Public Mirror</name>
+      <!-- Route ALL repos (*) through Nexus -->
+      <mirrorOf>*</mirrorOf>
+      <!-- Use the 'maven-public' group repo (includes Central proxy) -->
+      <url>http://172.31.34.152:8081/repository/maven-public/</url>
+    </mirror>
+  </mirrors>
+
+</settings>

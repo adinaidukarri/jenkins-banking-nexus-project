@@ -1,0 +1,210 @@
+// ╔══════════════════════════════════════════════════════════════════════╗
+// ║           PIPELINE 1 — CI (Continuous Integration)                  ║
+// ║                                                                      ║
+// ║  Job Name in Jenkins  : banking-app-CI                               ║
+// ║  Jenkinsfile to point : Jenkinsfile-multistage  (this file)         ║
+// ║                                                                      ║
+// ║  What it does:                                                       ║
+// ║    Checkout → Build → Test → SonarQube → Quality Gate               ║
+// ║    → On Success, automatically triggers Pipeline 2 (banking-app-CD) ║
+// ║                                                                      ║
+// ║  How multi-pipeline works:                                           ║
+// ║    Jenkins has a built-in step called  build job: 'job-name'        ║
+// ║    This step triggers another Jenkins job (Pipeline 2) and          ║
+// ║    waits for its result before marking Pipeline 1 as complete.      ║
+// ║                                                                      ║
+// ║  Analogy:                                                            ║
+// ║    Pipeline 1 = Quality Check team at a factory                     ║
+// ║    Pipeline 2 = Delivery team at the same factory                   ║
+// ║    Quality team finishes → hands over to Delivery team              ║
+// ╚══════════════════════════════════════════════════════════════════════╝
+
+pipeline {
+
+    agent any
+
+    tools {
+        maven 'maven'
+    }
+
+    environment {
+        // ── Nexus ──────────────────────────────────────────────────
+        NEXUS_CREDENTIALS_ID = 'nexus'
+        NEXUS_URL            = 'http://172.31.29.20:8081'
+
+        // ── SonarQube ──────────────────────────────────────────────
+        SONAR_TOKEN          = credentials('sonarqube')
+
+        // ── Pipeline 2 Job Name ────────────────────────────────────
+        // This MUST match exactly the job name you create in Jenkins
+        // for the CD pipeline (which uses Jenkinsfile-pipeline2)
+        CD_JOB_NAME          = 'banking-app-CD'
+    }
+
+    stages {
+
+        // ════════════════════════════════════════════════════════
+        // Stage 1 — Checkout
+        // ════════════════════════════════════════════════════════
+        stage('Checkout') {
+            steps {
+                echo '📦 [CI - Stage 1] Checking out source code...'
+                checkout scm
+                sh 'ls -la'
+            }
+        }
+
+        // ════════════════════════════════════════════════════════
+        // Stage 2 — Build banking-core
+        // ════════════════════════════════════════════════════════
+        stage('Build Core') {
+            steps {
+                echo '🔨 [CI - Stage 2] Building banking-core module...'
+                sh 'mvn -pl banking-core --also-make clean install -DskipTests'
+                echo '✅ banking-core built and installed to local .m2 cache.'
+            }
+        }
+
+        // ════════════════════════════════════════════════════════
+        // Stage 3 — Deploy banking-core to Nexus
+        // ════════════════════════════════════════════════════════
+        stage('Deploy Core to Nexus') {
+            steps {
+                echo '🚚 [CI - Stage 3] Deploying banking-core to Nexus...'
+                withCredentials([usernamePassword(
+                    credentialsId: "${NEXUS_CREDENTIALS_ID}",
+                    usernameVariable: 'NEXUS_USER',
+                    passwordVariable: 'NEXUS_PASS'
+                )]) {
+                    sh """
+                        mvn deploy -N -DskipTests \
+                            -Dusername=${NEXUS_USER} \
+                            -Dpassword=${NEXUS_PASS}
+
+                        mvn -pl banking-core deploy -DskipTests \
+                            -Dusername=${NEXUS_USER} \
+                            -Dpassword=${NEXUS_PASS}
+                    """
+                }
+                echo '✅ banking-core deployed to Nexus.'
+            }
+        }
+
+        // ════════════════════════════════════════════════════════
+        // Stage 4 — Build banking-api WAR
+        // ════════════════════════════════════════════════════════
+        stage('Build API') {
+            steps {
+                echo '🏗️ [CI - Stage 4] Building banking-api WAR...'
+                sh 'mvn -pl banking-api clean package -DskipTests'
+                echo '✅ banking-api WAR built successfully.'
+            }
+        }
+
+        // ════════════════════════════════════════════════════════
+        // Stage 5 — Unit Tests
+        // ════════════════════════════════════════════════════════
+        stage('Test') {
+            steps {
+                echo '🧪 [CI - Stage 5] Running unit tests...'
+                sh 'mvn -pl banking-api test'
+                echo '✅ All tests passed!'
+            }
+            post {
+                always {
+                    junit 'banking-api/target/surefire-reports/*.xml'
+                }
+                failure {
+                    echo '❌ Tests failed! CD pipeline will NOT be triggered.'
+                }
+            }
+        }
+
+        // ════════════════════════════════════════════════════════
+        // Stage 6 — SonarQube Analysis
+        // ════════════════════════════════════════════════════════
+        stage('SonarQube Analysis') {
+            steps {
+                echo '🔍 [CI - Stage 6] Running SonarQube analysis...'
+                withSonarQubeEnv('sonarqube') {
+                    sh """
+                        mvn sonar:sonar \
+                            -Dsonar.projectKey=banking-app \
+                            -Dsonar.projectName='Banking Application' \
+                            -Dsonar.token=${SONAR_TOKEN}
+                    """
+                }
+                echo '✅ SonarQube analysis submitted.'
+            }
+        }
+
+        // ════════════════════════════════════════════════════════
+        // Stage 7 — Quality Gate
+        // ════════════════════════════════════════════════════════
+        stage('Quality Gate') {
+            steps {
+                echo '🚦 [CI - Stage 7] Checking SonarQube Quality Gate...'
+                timeout(time: 5, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+                echo '✅ Quality Gate passed!'
+            }
+        }
+
+        // ════════════════════════════════════════════════════════
+        // Stage 8 — Trigger CD Pipeline (Pipeline 2)
+        //
+        //  build job: '<name>'   → triggers another Jenkins job
+        //  wait: true            → Pipeline 1 waits for Pipeline 2
+        //                          to finish before marking itself
+        //                          as SUCCESS or FAILURE
+        //  wait: false           → Fire and forget — Pipeline 1
+        //                          finishes immediately after trigger
+        //
+        //  propagate: true       → If Pipeline 2 fails, Pipeline 1
+        //                          also marks itself as FAILED
+        //  propagate: false      → Pipeline 1 stays SUCCESS even if
+        //                          Pipeline 2 fails
+        //
+        //  parameters: [...]     → Pass values from Pipeline 1
+        //                          to Pipeline 2 (e.g. build number,
+        //                          branch name, artifact version)
+        // ════════════════════════════════════════════════════════
+        stage('Trigger CD Pipeline') {
+            steps {
+                echo "🚀 [CI - Stage 8] All checks passed! Triggering CD pipeline: ${CD_JOB_NAME}..."
+
+                build job: "${CD_JOB_NAME}",
+                      wait: true,         // wait for Pipeline 2 to finish
+                      propagate: true,    // fail CI if CD fails
+                      parameters: [
+                          // Pass the current build number so Pipeline 2
+                          // knows which CI build triggered it
+                          string(name: 'TRIGGERED_BY_BUILD', value: "${BUILD_NUMBER}"),
+
+                          // Pass the branch name so Pipeline 2 can log it
+                          string(name: 'SOURCE_BRANCH',      value: "${GIT_BRANCH}")
+                      ]
+
+                echo "✅ CD Pipeline completed successfully!"
+            }
+        }
+
+    }
+
+    // ════════════════════════════════════════════════════════
+    // Post — CI pipeline result notification
+    // ════════════════════════════════════════════════════════
+    post {
+        success {
+            echo '🎉 CI Pipeline PASSED — CD Pipeline was triggered and completed!'
+        }
+        failure {
+            echo '❌ CI Pipeline FAILED — CD Pipeline was NOT triggered.'
+        }
+        always {
+            echo '🧹 Cleaning CI workspace...'
+            cleanWs()
+        }
+    }
+}
