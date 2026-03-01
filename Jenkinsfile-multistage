@@ -30,7 +30,7 @@ pipeline {
     environment {
         // ── Nexus ──────────────────────────────────────────────────
         NEXUS_CREDENTIALS_ID = 'nexus'
-        NEXUS_URL            = 'http://172.31.29.20:8081'
+        NEXUS_URL            = 'http://172.31.34.152:8081'
 
         // ── SonarQube ──────────────────────────────────────────────
         SONAR_TOKEN          = credentials('sonarqube')
