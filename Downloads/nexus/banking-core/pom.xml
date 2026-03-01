@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <!-- ============================================================
+       banking-core — The "Internal Rule Book" of the bank.
+       This module contains shared business logic (interest calc,
+       loan eligibility etc.) packaged as a JAR and shipped to
+       Nexus so other modules can reuse it without duplicating code.
+  ============================================================ -->
+
+  <parent>
+    <groupId>com.banking</groupId>
+    <artifactId>banking-app</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>banking-core</artifactId>
+  <packaging>jar</packaging>
+  <name>Banking Core - Shared Business Logic</name>
+
+</project>

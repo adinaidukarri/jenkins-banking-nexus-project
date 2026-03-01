@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <!-- ============================================================
+       Parent POM — The "Head Office" of the banking-app project.
+       All child modules inherit settings from here.
+       Think of this as the bank's policy document that all
+       branches (modules) must follow.
+  ============================================================ -->
+
+  <groupId>com.banking</groupId>
+  <artifactId>banking-app</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>Banking Application - Parent</name>
+
+  <!-- Child modules — like branches of the same bank -->
+  <modules>
+    <module>banking-core</module>
+    <module>banking-api</module>
+  </modules>
+
+  <properties>
+    <!-- Java 21 (Corretto) — matching your Jenkins server -->
+    <maven.compiler.source>21</maven.compiler.source>
+    <maven.compiler.target>21</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <!-- ============================================================
+       distributionManagement — Tells Maven WHERE to ship the JAR.
+       Like a dispatch label on a courier package: "Send to Nexus warehouse."
+       The IDs (nexus-snapshots, nexus-releases) MUST match
+       the <server> IDs in Jenkins' settings.xml
+  ============================================================ -->
+  <distributionManagement>
+    <snapshotRepository>
+      <id>nexus-snapshots</id>
+      <url>http://172.31.34.152:8081/repository/banking-snapshots/</url>
+    </snapshotRepository>
+    <repository>
+      <id>nexus-releases</id>
+      <url>http://172.31.34.152:8081/repository/banking-releases/</url>
+    </repository>
+  </distributionManagement>
+
+</project>
